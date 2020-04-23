@@ -1,0 +1,136 @@
+<!--
+
+<mvc:annotation-driven/>标签
+    开启SpringMVC框架注解的支持, 并且这个标签会自动加载处理映射器和处理适配器(写在springmvc.xml中)
+    属性：
+        conversion-service：引用自定义类型转换器
+
+
+@Controller
+    作用：写在类上将此类作为控制器
+
+
+@RequestMapping
+    作用：用于建立请求 URL 和处理请求方法之间的对应关系，即访问路径
+    出现位置：
+        类上：请求 URL 的第一级访问目录。不写相当于应用的根目录。、需要以/开头。
+              能使我们的URL按照模块化管理
+        方法上：请求 URL 的第二级访问目录。
+            在JSP页面中写入访问目录后，框架会根据此注解找到对应方法执行
+        属性：
+            path：用于指定请求的 URL。是value属性
+            method：用于指定请求的方式。
+            params：用于指定限制请求参数的条件。它支持简单的表达式，
+                    要求请求参数的 key 和 value 必须和配置的一模一样。
+                例如：
+                    params = {"accountName"}，表示请求参数必须有 accountName
+                    params = {"moeny!100"}，表示请求参数中 money 不能是 100。
+            headers：用于指定限制请求消息头的条件。
+            注意：
+                以上四个属性只要出现 2 个或以上时，他们的关系是与的关系。
+
+
+@RequestParam
+    作用：把请求中指定名称的参数给控制器中的形参赋值。写在控制器方法的参数前上、
+    属性：value： 请求参数中的名称。
+          required：请求参数中是否必须提供此参数。 默认值： true。表示必须提供，如果不提供将报错。
+    public String use(@RequestParam(value="age",required=false)Integer age)
+
+
+@RequestBody
+    作用：用于获取请求体内容。直接使用得到是 key=value&key=value...结构的数据。写在控制器方法的参数前上
+          (get请求方式不适用,没有请求体)
+    属性：
+        required：是否必须有请求体。默认值是:true。
+                  当取值为 true 时,get 请求方式会报错。如果取值为 false， get 请求得到是 null。
+    public String test(@RequestBody String body)
+
+
+@PathVaribale
+    作用：获取绑定url中的占位符。
+        例如：请求url中/delete/{sid}，这个{sid}就是url占位符，解释看restful编程风格
+    属性：
+        value：用于指定 url 中占位符名称。
+        required：是否必须提供占位符。
+    @RequestMapping(value="/testPathVariable/{sid}")
+    public String test(@PathVariable(name="sid") String id)
+
+
+@ModelAttribute
+    作用：
+        出现在方法上，表示当前方法会在控制器的方法执行之前先执行。
+        修饰没有返回值的方法时，需要将对象数据存到一个map集合中
+        修饰有具体返回值的方法时，直接返回对象数据。
+        出现在参数上，获取指定的数据给参数赋值。(具体使用看视频吧，说不清楚)
+    属性：
+        value：用于获取数据的 key。 key 可以是 POJO 的属性名称，也可以是 map 结构的 key。
+    应用场景：
+        当表单提交数据不是完整的实体类数据时，保证没有提交数据的字段使用数据库对象原来的数据。
+
+
+
+@SessionAttribute
+    作用：用于同个类中多次执行控制器方法间的参数共享。写在类上
+    属性：
+        value：用于指定存入的属性名称
+        type：用于指定存入的数据类型。
+
+    Model是spring 提供的一个接口，有很多实现类配合此注解进行参数共享
+    一般开发流程：
+        (1)控制器方法接收请求的参数后，从数据库中取对应的值，
+        (2)addAttribute("key",value)方法可将键值对存储到request域对象中
+        (3)浏览器从request域对取值${...}   取值详情见EL表达式
+
+
+
+
+    @SessionAttributes(value={"msg"})   // 2.再把msg=AAA存入到session域对象中
+    public class Controller {
+
+        public String add(Model model){
+            // 1.底层会存储到request域对象中，此时已经能在jsp中直接从request域对取了${msg}
+            model.addAttribute("msg","AAA");}
+
+        public String get(ModelMap modelMap){
+            // 3.从session域对象中取值
+            String msg = (String) modelMap.get("msg");}
+
+
+
+
+@CookieValue（了解）
+    作用：用于把指定 cookie 名称的值传入控制器方法参数。
+    属性：
+        value：指定 cookie 的名称。
+        required：是否必须有此 cookie。
+    public String test(@CookieValue(value="JSESSIONID") String cookieValue){
+
+
+
+
+
+
+
+
+
+
+
+-->
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>

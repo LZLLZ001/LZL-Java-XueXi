@@ -1,0 +1,128 @@
+<!--
+ResponseBody响应json数据
+    1.DispatcherServlet(前端控制器)会拦截到所有的资源，导致静态资源（img、css、js）也会被拦截不能被使用。
+      需要在springmvc.xml配置静态资源不进行拦截:
+          方法1：<mvc:resources>标签配置不过滤目录
+                属性：
+                    location元素表示webapp目录下的包下的所有文件
+                    mapping元素表示以/static开头的所有请求路径，如/static/a 或者/static/a/b
+          方法2：释放静态资源，将静态资源交给默认servlet处理(用这个)
+                <mvc:default-servlet-handler/>
+
+
+    2.编写AJAX请求
+         <script>
+        // 页面加载，绑定单击事件
+        $(function(){
+            $("#btn").click(function(){
+                // alert("hello btn");
+                // 发送ajax请求
+                $.ajax({
+                    // 编写json格式，设置属性和值
+                    url:"user/testAjax",
+                    contentType:"application/json;charset=UTF-8",
+                    data:'{"username":"hehe","password":"123","age":30}',
+                    dataType:"json",
+                    type:"post",
+                    success:function(data){
+                        // 服务器端响应的json的数据，进行解析
+                        alert(data);
+                        alert(data.username);
+                        alert(data.password);
+                        alert(data.age);
+                    }
+                });
+
+            });
+        });
+    </script>
+
+    3.编写异步请求响应方法
+        (1)使用@RequestBody获取请求体中的json数据，当数据名对应时会自动封装到修饰对象中(需要使用jackson)；
+        (2)编写响应逻辑，做出响应，也会自动封装成json数据进行响应
+            @RequestMapping("/testAjax")
+            public @ResponseBody User testAjax(@RequestBody User user){
+                // 客户端发送ajax的请求，传的是json字符串，后端把json字符串封装到user对象中
+                // 响应逻辑，如查询数据库
+                // 做响应
+            }
+
+
+
+Controller方法返回值分类：
+    1.返回字符串String(底层是调用ModelAndView)：
+        controller方法返回字符串可以指定逻辑视图名，通过视图解析器解析为物理视图地址，并且进行跳转。
+
+        //视图解析器对象
+        <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+            <property name="prefix" value="/WEB-INF/pages/"/>   //写解析目录
+            <property name="suffix" value=".jsp"/>    //写解析后缀
+        </bean>
+
+        @RequestMapping("/testString")
+        public String testString(){
+
+            1. 跳转页面
+                视图解析器将其拼接为"/WEB-INF/pages/success.jsp"得到其物理视图地址，并且跳转到该页面
+                return "success";
+
+            2. 使用关键字进行请求转发
+                "forward:转发的JSP路径"，转发不调用视图解析器，需要编写完整的路径
+                return "forward:/WEB-INF/pages/success.jsp";
+
+            3. 使用关键字进行重定向
+                "forward:转发的JSP路径"，转发不调用视图解析器，需要编写完整的路径
+                return "redirect:/index.jsp";  注意：从定向无法进入/WEB-INF目录
+
+
+
+    2.返回值是ModelAndView对象
+        ModelAndView对象是Spring提供的一个对象，可以用来调整具体的JSP视图
+            方法：
+                addObject("key",value)  把value对象存储到mv对象和request对象中，浏览器EL获取
+                setViewName("success")  通过视图解析器跳转到该页面
+
+        @RequestMapping("/test")
+        public ModelAndView testReturnModelAndView() {
+            ModelAndView mv = new ModelAndView();
+            mv.addObject("username", "张三");
+            mv.setViewName("success");
+            return mv;}
+
+    3.无返回void
+        通过使用Servlet原始API进行不同的操作
+
+
+        @RequestMapping("/testReturnVoid")
+        public void testVoid(HttpServletRequest request,HttpServletResponse response){
+
+            1、使用 request 转向页面(此时不会调用视图解析器，需要写完整路径)：
+                request.getRequestDispatcher("/WEB-INF/pages/success.jsp").forward(request,response);
+
+            2、也可以通过 response 页面重定向：
+                response.sendRedirect("testRetrunString")
+
+            3、也可以通过 response 指定响应结果， 例如响应 json 数据：
+                response.setCharacterEncoding("utf-8");
+                response.setContentType("application/json;charset=utf-8");
+                response.getWriter().write("json 串");
+
+
+
+
+
+
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>

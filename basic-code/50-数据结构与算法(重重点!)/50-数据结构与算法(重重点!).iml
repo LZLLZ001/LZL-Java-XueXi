@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/1数据结构" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/2稀疏数组" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/3队列" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/4链表" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/5栈" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/6递归" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/7排序算法" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/8查找算法" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/9哈希表" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/10二叉树结构" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/11多叉树" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/12图" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/13十种算法" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

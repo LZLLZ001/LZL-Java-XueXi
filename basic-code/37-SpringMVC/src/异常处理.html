@@ -1,0 +1,35 @@
+<!--
+
+异常处理思路：
+    异常都是向上抛出的，dao->service->Controller->前端控制器->异常处理器，
+
+
+SpringMVC的异常处理
+    1. 自定义异常类(一般做错误提示信息)
+        继承 Exception
+        在出现异常的地方抛出
+
+    2. 自定义异常处理器(写异常处理逻辑)
+        实现HandlerExceptionResolver接口
+        获取抛出的异常并进行处理
+
+    3. 配置异常处理器
+        将自定义的异常处理器配置到框架中(与配置一个普通类方法一样)
+        <bean id="sysExceptionResolver" class="cn.itcast.exception.SysExceptionResolver"/>
+
+
+
+
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>

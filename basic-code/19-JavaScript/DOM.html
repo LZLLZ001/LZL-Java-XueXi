@@ -1,0 +1,102 @@
+<!--
+DOM 功能：控制html文档的内容(增删改查)
+
+Document Object Model 文档对象模型
+	* 将标记语言文档的各个组成部分，封装为对象。可以使用这些对象，对标记语言文档进行增删改查的动态操作
+
+W3C DOM 标准被分为 3 个不同的部分：
+	(1) 核心 DOM - 针对任何结构化文档的标准模型
+            * Document：文档对象
+            * Element：元素对象
+            * Attribute：属性对象
+            * Text：文本对象
+            * Comment:注释对象
+            * Node：节点对象，其他5个的父对象
+	(2) XML DOM - 针对 XML 文档的标准模型
+	(3) HTML DOM - 针对 HTML 文档的标准模型
+
+
+核心DOM模型：(查寻资料时查XML的DOM，HTML的DOM修改较大)
+	1. Document：文档对象
+		(1) 创建(获取)：在html dom模型中可以使用window对象来获取
+			1. window.document
+			2. document
+		(2) 方法：
+			1. 获取Element对象：
+				1. getElementById()	： 根据id属性值获取元素对象。id属性值一般唯一
+				2. getElementsByClassName():根据Class属性值获取元素对象们。返回值是一个数组
+				3. getElementsByTagName()：根据元素名称获取元素对象们。返回值是一个数组
+				4. getElementsByName(): 根据name属性值获取元素对象们。返回值是一个数组
+			2. 创建其他DOM对象：
+				createAttribute(name)
+            	createComment()
+            	createElement()
+            	createTextNode()
+		(3) 属性：
+
+
+	2. Element：元素对象
+		(1) 获取/创建：通过document来获取和创建
+		(2) 方法：
+			1. setAttribute("属性名","属性值")：设置属性
+			2. removeAttribute()：删除属性
+
+		操作Element对象：
+        (1) 修改属性值：
+            1. 明确获取的对象是哪一个
+            2. 查看API文档，找其中有哪些属性可以设置
+        (2) 修改标签体内容：<div id="div1">...</div>  //标签体内容指的是...部分
+            * 属性：innerHTML
+            1. 获取元素对象
+            2. 使用innerHTML属性修改标签体内容
+                var div = document.getElementById("div1");
+                var innerHTML = div.innerHTML;
+                div.innerHTML = "<input type='text'>"; //div标签中替换一个文本输入框
+                div.innerHTML += "<input type='text'>"; //div标签中追加一个文本输入框
+
+
+	3. Node：节点对象，其他5个的父对象
+		(1) 特点：所有dom对象都可以被认为是一个节点
+		(2) 方法：
+			* CRUD dom树：
+				* appendChild()：向节点的子节点列表的结尾添加新的子节点。
+				* removeChild()	：删除（并返回）当前节点的指定子节点。
+				* replaceChild()：用新节点替换一个子节点。
+				    如：    <div id="div1">  //div1为div2的父节点
+                                <div id="div2">div2</div>   //div2为div1的子节点
+                                div1
+                            </div>
+		(3) 属性：
+			* parentNode 返回节点的父节点。
+
+
+HTML DOM模型
+	1. 标签体的设置和获取：元素对象.innerHTML
+	2. 使用html元素对象的属性(使用时查表就行)
+	3. 控制元素样式(使用时查表就行)
+		方式1：使用元素的style属性来设置
+		    元素对象.style.CSS属性名 = "属性值" //再次强调，js中基本都是传递字符串，所以都要加""
+		        div1.style.width = "200px";
+		        //font-size-> fontSize
+                div1.style.fontSize = "20px";
+        方式2：提前定义好类选择器的样式，通过元素的className属性来设置其class属性值。
+                div2.className = "d1";
+
+
+
+
+
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>

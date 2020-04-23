@@ -1,0 +1,105 @@
+<!--
+SpringMVC提供了快捷文件上传实现方式
+
+    文件上传的必要前提：
+        A form 表单的 enctype 取值必须是： multipart/form-data
+            (默认值是:application/x-www-form-urlencoded)
+            enctype:是表单请求正文的类型
+        B method 属性取值必须是Post (get方式通过地址栏提交数据有大小限制)
+        C 提供一个文件选择域<input type=”file” name="AAA" />, 此name值必须与控制器传参对象名一致
+
+            <form action="/fileupload" method="post" enctype="multipart/form-data">
+                选择文件：<input type="file" name="upload" /><br/>
+                <input type="submit" value="上传" />
+            </form>
+
+
+    配置文件解析器对象
+        <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+            这里可以配置一些属性
+        </bean>
+
+
+    编写控制器
+        MultipartFile对象：SpringMVC框架提供的表示上传文件的对象，有很多方法可用，要求变量名称必须和表单file标签的name属性名称相同
+
+        @RequestMapping("/fileupload")
+        public String fileuoload(HttpServletRequest request, MultipartFile upload) {
+            // 使用fileupload组件完成文件上传
+            // 上传的位置
+            String path = request.getSession().getServletContext().getRealPath("/uploads/");
+            // 判断，该路径是否存在
+            File file = new File(path);
+            if(!file.exists()){
+                // 创建该文件夹
+                file.mkdirs();
+            }
+            // 获取上传文件的名称
+            String filename = upload.getOriginalFilename();
+            // 把文件的名称设置唯一值，uuid
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            filename = uuid+"_"+filename;
+            // 完成文件上传
+            upload.transferTo(new File(path,filename));
+            return "success";
+        }
+
+
+
+springmvc 跨服务器方式的文件上传：
+
+    在实际开发中，我们会有很多处理不同功能的服务器。例如：
+        应用服务器：负责部署我们的应用
+        数据库服务器：运行我们的数据库
+        缓存和消息服务器：负责处理大并发访问的缓存和消息
+        文件服务器：负责存储用户上传文件的服务器。
+        (注意：此处说的不是服务器集群）
+
+    SpringMVC跨服务器文件上传提供的包：jersey
+
+        @RequestMapping("/fileupload3")
+            public String fileuoload3(MultipartFile upload) throws Exception {
+
+                // 定义上传文件服务器路径
+                String path = "http://localhost:9090/uploads/";
+
+                // 说明上传文件项
+                // 获取上传文件的名称
+                String filename = upload.getOriginalFilename();
+                // 把文件的名称设置唯一值，uuid
+                String uuid = UUID.randomUUID().toString().replace("-", "");
+                filename = uuid+"_"+filename;
+
+                // 创建客户端的对象
+                Client client = Client.create();
+
+                // 和图片服务器进行连接
+                WebResource webResource = client.resource(path + filename);
+
+                // 上传文件
+                webResource.put(upload.getBytes());
+
+                return "success";
+            }
+
+
+
+
+
+
+
+
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>

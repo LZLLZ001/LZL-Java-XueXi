@@ -1,0 +1,54 @@
+<!--
+
+SpringMVC的拦截器
+    用于对处理器进行预处理和后处理,可以自己定义一些拦截器来实现特定的功能。(类似于 Servlet 开发中的过滤器 Filter，)
+        区别：
+             过滤器是 servlet 规范中的一部分， 任何 java web 工程都可以使用。
+                    在 url-pattern 中配置了/*之后，可以对所有要访问的资源拦截。
+             拦截器是 SpringMVC 框架自己的，只有使用了 SpringMVC 框架的工程才能用。它也是 AOP 思想的具体应用。
+                    只会拦截访问的控制器方法，如果访问的是 jsp， html,css,image 或者 js 是不会进行拦
+
+    拦截器链（Interceptor Chain）:将拦截器按一定的顺序联结成一条链。
+        在访问被拦截的方法或字段时，拦截器链中的拦截器就会按其之前定义的顺序被调用。
+
+
+
+自定义拦截器步骤
+    编写拦截器类，实现HandlerInterceptor接口，重写需要的方法
+        (1) preHandle方法：预处理，controller方法执行前
+                可以使用request或者response跳转到指定的页面
+                return true 放行，执行下一个拦截器，如果没有，执行controller中的方法
+                return false 不放行
+        (2)postHandle方法：后处理方法，controller方法执行后，客户端执行之前
+                可以使用request或者response跳转到指定的页面，但controller方法跳转的页面将不会显示
+        (3)afterCompletion方法：最后处理方法，客户端执行之后
+
+    配置拦截器类(在springmvc.xml中):
+        <mvc:interceptors>
+            <mvc:interceptor>
+                //哪些方法进行拦截(这个和下面的配置其中一个就行)
+                <mvc:mapping path="/user/*"/>
+
+                //哪些方法不进行拦截
+                <mvc:exclude-mapping path=""/>
+
+                //注册拦截器对象
+                <bean class="cn.itcast.demo1.MyInterceptor1"/>
+            </mvc:interceptor>
+        </mvc:interceptors>
+
+
+
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>

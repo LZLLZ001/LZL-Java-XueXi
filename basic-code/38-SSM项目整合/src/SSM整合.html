@@ -1,0 +1,95 @@
+<!--
+SSM = Spring + SpringMVC + MyBatis
+    选择XML + 注解的方式
+    整合的思路：
+        1. 先分别搭建3个框架
+        2. 使用Spring整合SpringMVC框架
+        3. 最后使用Spring整合MyBatis框架
+
+分别配置时注意下面的配置：
+
+Spring：
+    1.配置文件改名为applicationContext.xml（为了与监听器配合必须交这个名字，不能叫Spring.xml）
+    2.开启注解的扫描，处理service和dao，但是需要屏蔽controller(交给SpringMVC处理)
+        <context:component-scan base-package="cn.itcast" >
+            //配置哪些注解不扫描
+            <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+        </context:component-scan>
+
+    2.给service实现类和DAO接口加上扫描注解，并且给Service加上事务管理
+        @Service("accountService")
+        public class AccountServiceImpl implements AccountService
+
+        @Repository
+        public interface AccountDao
+
+
+springMVC:
+    1.开启注解扫描，只扫描Controller注解
+        <context:component-scan base-package="cn.itcast">
+            <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+        </context:component-scan>
+
+
+
+
+Spring整合SpringMVC的框架
+    目的：在controller中能成功的调用service对象中的方法，即让Spring启动注入。
+         (因为此时web.xml中只加载了SpringMVC.xml，而没有加载Spring.xml的配置文件，所以无法注入)
+    方法：在web.xml中配置ContextLoaderListener监听器，让在项目启动的时就去加载Spring的配置文件，
+    （该监听器只能加载WEB-INF目录下的applicationContext.xml的配置文件，
+      所以Spring配置文件必须改成这个名字，并且需要配置文件路径）
+
+            //配置Spring核心监听器
+            <listener>
+                <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+            </listener>
+            //设置配置文件的路径
+            <context-param>
+                <param-name>contextConfigLocation</param-name>
+                <param-value>classpath:applicationContext.xml</param-value> //表示去找类路径下的XML
+            </context-param>
+
+
+Spring整合MyBatis框架
+    目的：把SqlMapConfig.xml配置文件中的内容整合配置到applicationContext.xml配置文件中，
+         使其对象存入到Spring容器中。
+
+    (1)配置连接池
+         <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+            <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+            <property name="jdbcUrl" value="jdbc:mysql:///ssm"/>
+            <property name="user" value="root"/>
+            <property name="password" value="root"/>
+         </bean>
+
+    (2)配置SqlSessionFactory工厂
+        <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+            <property name="dataSource" ref="dataSource" />
+        </bean>
+
+    (3)配置AccountDao接口所在包
+        <bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+            <property name="basePackage" value="cn.itcast.dao"/>
+        </bean>
+
+
+
+
+
+
+
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>

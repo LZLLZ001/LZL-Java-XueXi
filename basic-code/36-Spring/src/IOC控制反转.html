@@ -1,0 +1,324 @@
+<!--
+IOC：Inversion Of Control-控制反转：将代码的控制权从调用方修改为被调用方
+    即把创建对象的权利交给框架
+    作用：降低程序间的耦合（依赖关系）
+            依赖关系的管理以后都交给spring来维护
+            在当前类需要用到其他类的对象，由spring为我们提供，我们只需要在配置文件中说明(工厂模式思想)
+    常用方式：
+        依赖注入（Dependency Injection，简称DI）
+        依赖查找（Dependency Lookup）
+
+
+
+Spring依赖关系的维护：就称之为依赖注入（Dependency Injection，简称DI）
+    理解：也就是在配置文件中或者使用注解写清楚类的具体信息，让依赖关系注入(放进)spring容器中
+    能注入的数据：有三类
+        基本类型和String
+        其他bean类型（在配置文件中或者注解配置过的bean）
+        复杂类型/集合类型
+
+
+基于XML的IOC：
+
+
+XML约束代码在官网上复制过来就行：
+    <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+Spring创建Bean的三种方式: 创建的对象会保存在spring容器中 (写在XML中)
+    原理：根据全路径名找到类后反射创建对象
+
+    第一种方式：使用默认构造函数创建。
+        在spring的配置文件中使用bean标签，配以id和class属性之后，且没有其他属性和标签时。
+        采用的就是默认构造函数创建bean对象，此时如果类中没有默认构造函数，则对象无法创建。
+        <bean id="自定义对象id" class="实现类的全路径名"></bean>
+
+            <bean id="accountService" class="com.itheima.service.impl.AccountServiceImpl"></bean>
+
+    第二种方式： 使用普通工厂中的方法创建对象（使用某个类中的方法创建对象，并存入spring容器）
+        <bean id="自义定工厂类对象id" class="工厂实现类全路径名"></bean>
+        <bean id="自定义对象id" factory-bean="工厂类对象id" factory-method="对应方法名"></bean>
+
+            <bean id="instanceFactory" class="com.itheima.factory.InstanceFactory"></bean>
+            <bean id="accountService" factory-bean="instanceFactory" factory-method="getAccountService"></bean>
+
+    第三种方式：使用工厂中的静态方法创建对象（使用某个类中的静态方法创建对象，并存入spring容器)
+        <bean id="自定义对象id" class="工厂实现类全路径名" factory-method="对应方法名"></bean>
+
+            <bean id="accountService" class="com.itheima.factory.StaticFactory" factory-method="getAccountService"></bean>
+
+
+bean的作用范围调整：
+    bean标签的scope属性：
+        作用：用于指定bean的作用范围
+        取值： 常用的就是单例的和多例的
+            singleton：单例的（默认值）
+            prototype：多例的(多次调用时会创建多个对象)
+            request：作用于web应用的请求范围
+            session：作用于web应用的会话范围
+            global-session：作用于集群环境的会话范围（全局会话范围），（如：单个服务器为session，多个服务器共享为global-sessio）
+    <bean id="accountService" class="com.itheima.service.impl.AccountServiceImpl" scope="prototype"></bean>
+
+
+bean对象的生命周期
+    单例对象
+        出生：当容器创建时对象出生
+        活着：只要容器还在，对象一直活着
+        死亡：容器销毁，对象消亡
+        总结：单例对象的生命周期和容器相同
+    多例对象
+        出生：当我们使用对象时spring框架为我们创建
+        活着：对象只要是在使用过程中就一直活着。
+        死亡：当对象长时间不用，且没有别的对象引用时，由Java的垃圾回收器回收
+
+
+
+注入数据的方式：
+    第一种：使用构造函数提供: 使用标签constructor-arg (写在bean标签内部）
+            标签中的属性：
+                name：用于指定给构造函数中指定名称的参数赋值
+                value：用于提供基本类型和String类型的数据
+                ref：用于指定其他的bean类型数据。它指的就是在spring的Ioc核心容器中出现过的bean对象
+            优势：在获取bean对象时，注入数据是必须的操作，否则对象无法创建成功。
+            弊端：改变了bean对象的实例化方式，使我们在创建对象时，如果用不到这些数据，也必须提供。
+                <bean id="accountService" class="com.itheima.service.impl.AccountServiceImpl">
+                    <constructor-arg name="name" value="TEST"></constructor-arg>
+                    <constructor-arg name="age" value="18"></constructor-arg>
+                    <constructor-arg name="birthday" ref="now"></constructor-arg>
+                </bean>
+                <bean id="now" class="java.util.Date"></bean>  // 配置一个beam对象
+
+    第二种：使用set方法提供: 使用标签property (写在bean标签内部）更常用
+            标签的属性:
+                name：用于指定注入时所调用的set方法名称
+                value：用于提供基本类型和String类型的数据
+                ref：用于指定其他的bean类型数据。它指的就是在spring的Ioc核心容器中出现过的bean对象
+            优势：创建对象时没有明确的限制，可以直接使用默认构造函数
+            弊端：如果有某个成员必须有值，则获取对象是有可能set方法没有执行。
+                    <bean id="accountService2" class="com.itheima.service.impl.AccountServiceImpl2">
+                        <property name="name" value="TEST" ></property>
+                        <property name="age" value="21"></property>
+                        <property name="birthday" ref="now"></property>
+                    </bean>
+
+            复杂类型的注入/集合类型的注入：使用多个property
+                用于给List结构集合注入的标签(注意只要是list结构的都行，不一定是List)：
+                    list array set
+                用于个Map结构集合注入的标签:
+                    map  props
+                结构相同，标签可以互换(所以只用记list和map两种就行)
+                    <bean id="accountService3" class="com.itheima.service.impl.AccountServiceImpl3">
+                        <property name="myStrs">
+                            <list>  //改为array set都行
+                                <value>AAA</value>
+                                <value>BBB</value>
+                            </list>
+                        </property>
+                        <property name="myProps">
+                            <map>
+                                <entry key="testA" value="aaa"></entry>
+                                <entry key="testB" value="bbb"></entry>
+                            </map>
+                        </property>
+                    </bean>
+
+
+
+
+基于注解的IOC：(最好XML和注解两种方式都掌握)
+
+
+基础配置分为XML配置与纯注解配置：
+    1.XML配置方法：bean.xml
+        （1）导入注解IOC的约束（官网查询）
+
+        （2）在使用注解IOC时，配置所需要的标签不是在beans的约束中，而是一个名称为context名称空间和约束中
+            因此要在XML中告知spring在创建容器时要扫描的包，它会扫描包中所有的注解(maven默认java代码从src.main.java开始)
+            <context:component-scan base-package="com.itheima"></context:component-scan>
+
+        （3）创建使用别人jar包中的类bean，并且注入数据(因为没法在别人的jar包类上加上自己的注解)
+
+                <?xml version="1.0" encoding="UTF-8"?>
+                <beans xmlns="http://www.springframework.org/schema/beans"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xmlns:context="http://www.springframework.org/schema/context"
+                       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd">
+
+                    //告知spring在创建容器时要扫描的包
+                    <context:component-scan base-package="com.itheima"></context:component-scan>
+                    //配置QueryRunner
+                    <bean id="runner" class="org.apache.commons.dbutils.QueryRunner" scope="prototype">
+                        //注入数据源
+                        <constructor-arg name="ds" ref="dataSource"></constructor-arg>
+                    </bean>
+                    //配置数据源
+                    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+                        连接数据库的必备信息
+                        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+                        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/eesy"></property>
+                        <property name="user" value="root"></property>
+                        <property name="password" value="1234"></property>
+                    </bean>
+                </beans>
+
+
+
+    2.纯注解配置：（选择方式：具体看公司要求，因此两个都要掌握，但是用xml配置+自己注解的结合方便一些）
+            编写一个配置类，它的作用和bean.xml是一样的
+            spring中的新注解：
+            @Configuration
+                作用：指定当前类是一个配置类
+                细节：当配置类作为AnnotationConfigApplicationContext对象创建的参数时，该注解可以不写。
+            @ComponentScan(com.itheima) //(maven默认java代码从src.main.java开始)
+                作用：用于通过注解指定spring在创建容器时要扫描的包
+                属性：value：它和basePackages的作用是一样的，都是用于指定创建容器时要扫描的包。
+                        就等同于在xml中配置了:
+                          <context:component-scan base-package="com.itheima"></context:component-scan>
+            @Bean  //用于不是自己编写的类(因为无法修改调用的类的代码)
+                作用：用于把当前方法的返回值作为bean对象存入spring的ioc容器中
+                属性: name:用于指定bean的id。当不写时，默认值是当前方法的名称
+                细节：
+                   当我们使用注解配置方法时，如果方法有参数，spring框架会去容器中查找有没有可用的bean对象。
+                   查找的方式和Autowired注解的作用是一样的
+            @Import
+                作用：用于导入其他的配置类
+                属性：value：用于指定其他配置类的字节码。
+                        当我们使用Import的注解之后，有Import注解的类就父配置类，而导入的都是子配置类
+            @PropertySource
+                作用：用于指定properties文件的位置,用了这个就可以用@Value("${键名}")进行对应的取值
+                属性：value：指定文件的名称和路径。关键字：classpath，表示类路径下
+
+                public class JdbcConfig {
+
+                    @Value("${jdbc.driver}")
+                    private String driver;
+                    @Value("${jdbc.url}")
+                    private String url;
+                    @Value("${jdbc.username}")
+                    private String username;
+                    @Value("${jdbc.password}")
+                    private String password;
+
+                    @Bean(name="runner")
+                    @Scope("prototype")
+                    public QueryRunner createQueryRunner(@Qualifier("ds2") DataSource dataSource){
+                        return new QueryRunner(dataSource);
+                    }
+
+                    @Bean(name="ds2")
+                    public DataSource createDataSource(){
+                        try {
+                            ComboPooledDataSource ds = new ComboPooledDataSource();
+                            ds.setDriverClass(driver);
+                            ds.setJdbcUrl(url);
+                            ds.setUser(username);
+                            ds.setPassword(password);
+                            return ds;
+                        }catch (Exception e){
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+
+                @Configuration
+                @ComponentScan("com.itheima")
+                @Import(JdbcConfig.class)
+                @PropertySource("classpath:jdbcConfig.properties")
+                public class SpringConfiguration {}
+
+
+
+4种常用IOC注解：用于自己写的类
+    一、创建对象注解（作用和在XML配置文件中编写一个<bean>标签实现的功能一样）
+           @Component:
+               作用：用于把当前类对象存入spring容器中
+               属性：value：用于指定bean的id。当我们不写时，它的默认值是当前类名，且首字母改小写。
+           @Controller：一般用在表现层
+           @Service：一般用在业务层
+           @Repository：一般用在持久层
+           以上三个注解他们的作用和属性与Component是一模一样。
+           他们三个是spring框架为我们提供明确的三层使用的注解，使我们的三层对象更加清晰
+           （所以一般会遵守这个约定使用注解，不清楚属于哪一层的才用第一个）
+
+  二、注入数据注解（作用就和在xml配置文件中的bean标签中写一个<property>标签的作用一样）
+       @Autowired:
+           作用：自动按照类型注入。只要容器中有唯一的一个bean对象类型和要注入的变量类型匹配，就可以注入成功
+                 如果ioc容器中没有任何bean的类型和要注入的变量类型匹配，则报错。
+                 如果Ioc容器中有多个类型匹配时：先按数据类型找出匹配的对象，然后按照变量名称作为bean的ID在匹配对象中查找
+                    @Repository("accountDao1")
+                    public class AccountDaoImpl implements IAccountDao
+                    @Repository("accountDao2")
+                    public class AccountDaoImpl2  implements IAccountDao
+                        @Autowired
+                     访问修饰符   数据类型     变量名称
+                        private IAccountDao accountDao1 = null;//按数据类型匹配出两个，再按变量名称查到到需要的那个
+           出现位置：变量上 或者 方法上
+           细节：在使用注解注入时，set方法就不是必须的了。
+       @Qualifier:
+           作用：在按照类中注入的基础之上再按照名称注入。它在给类成员注入时不能单独使用。但是在给方法参数注入时可以
+           属性：value：用于指定注入bean的id。
+                  @Autowired
+                  @Qualifier("accountDao1")     fun(@Qualifier("ds1") DataSource dataSource)
+                  类
+       @Resource：@Resource(name = "accountDao2") //一般用这个
+           作用：直接按照bean的id注入。它可以独立使用
+           属性：name：用于指定bean的id。
+       以上三个注入都只能注入其他bean类型的数据，而基本类型和String类型无法使用上述注解实现。
+       另外，集合类型的注入只能通过XML来实现。
+
+       @Value(${表达式})
+          作用：用于注入基本类型和String类型的数据
+          属性：value：用于指定数据的值。它可以使用spring中SpEL(也就是spring的el表达式）
+                       SpEL的写法：${表达式}
+
+  三、改变作用范围注解（作用和在bean标签中使用scope属性实现的功能一样）
+       @Scope
+           作用：用于指定bean的作用范围
+           属性：value：指定范围的取值。常用取值：singleton(单例)  prototype(多例)
+
+  四、和生命周期相关注解（了解）（作用和在bean标签中使用init-method和destroy-methode的作用一样）
+       @PreDestroy
+           作用：用于指定销毁方法
+       @PostConstruct
+           作用：用于指定初始化方法
+
+
+
+
+核心容器接口:ApplicationContext
+    ApplicationContext的三个常用实现类：
+          ClassPathXmlApplicationContext：它可以加载类路径下的配置文件，要求配置文件必须在类路径下。不在的话，加载不了。(更常用)
+          FileSystemXmlApplicationContext：它可以加载磁盘任意路径下的配置文件(必须有访问权限）
+          AnnotationConfigApplicationContext：它是用于读取注解创建容器的。
+
+    方法：getBean("对象实现类")
+
+
+使用步骤：
+    1.编写配置文件XML(放在resources文件夹里)
+    2.获取核心容器对象
+        XML：ApplicationContext ac = new ClassPathXmlApplicationContext("bean.xml");//也可以不用多态写法
+        纯注释：ContextConfiguration(classes = SpringConfiguration.class)
+    3.根据id获取Bean对象
+        对象接口 as  = (对象接口)ac.getBean("对象实现类");
+        对象接口 as  = ac.getBean("对象实现类",(对象接口).class);
+
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
